@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane id="AnchorPane" prefHeight="388.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication.ui.searchBook.BookSearchController">
+   <children>
+      <Accordion prefHeight="388.0" prefWidth="601.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <panes>
+          <TitledPane animated="false" text="Search by Book ID">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox alignment="CENTER" layoutX="249.0" layoutY="62.0" prefHeight="324.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <TextField fx:id="bookID" alignment="CENTER" onAction="#idBookInfo" prefHeight="25.0" prefWidth="88.0" promptText="Enter Book ID">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="175.0" right="175.0" top="10.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <ListView fx:id="idBookList" prefHeight="200.0" prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                                 </VBox.margin>
+                              </ListView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Search by Name">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="324.0" prefWidth="598.0">
+                           <children>
+                              <TextField fx:id="bookTitle" alignment="CENTER" onAction="#titleBookInfo" prefHeight="25.0" prefWidth="200.0" promptText="EnterBook Title">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="175.0" right="175.0" top="10.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <ListView fx:id="titleBookList" prefHeight="200.0" prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                                 </VBox.margin>
+                              </ListView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Search by Category">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="324.0" prefWidth="598.0">
+                           <children>
+                              <TextField fx:id="bookCategory" alignment="CENTER" onAction="#bookCategoryInfo" prefHeight="25.0" prefWidth="200.0" promptText="Enter Book Category">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="175.0" right="175.0" top="10.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <ListView fx:id="categoryBookList" prefHeight="200.0" prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                                 </VBox.margin>
+                              </ListView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </TitledPane>
+        </panes>
+      </Accordion>
+   </children>
+</AnchorPane>
