@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.Alert;
 import javax.swing.JOptionPane;
 
 public final class DatabaseHandler
@@ -18,6 +17,7 @@ public final class DatabaseHandler
     private static Connection conn = null;
     private static Statement stmt = null;
     
+    //Constructer that calls all create table methods on object creation.
     public DatabaseHandler()
     {
         createConnection();
@@ -37,6 +37,7 @@ public final class DatabaseHandler
         return handler;
     }
     
+    //Method to connect to mysql database server
     void createConnection()
     {
         try
@@ -51,6 +52,7 @@ public final class DatabaseHandler
         }
     }
     
+    //Method to create table: PUBLISHER
     void setupPublisherTable()
     {
         String TABLE_NAME = "PUBLISHER";
@@ -59,7 +61,6 @@ public final class DatabaseHandler
             stmt = conn.createStatement();
             DatabaseMetaData dbm = conn.getMetaData();
             ResultSet tables = dbm.getTables(null, null, TABLE_NAME.toUpperCase(), null);
-
             if (tables.next())
             {
                 System.out.println("Table " + TABLE_NAME + "already exists. Proceed to next!");
@@ -78,6 +79,7 @@ public final class DatabaseHandler
         }
     }
 
+    //Method to create table: BOOK
     void setupBookTable()
     {
         String TABLE_NAME = "BOOK";
@@ -86,7 +88,6 @@ public final class DatabaseHandler
             stmt = conn.createStatement();
             DatabaseMetaData dbm = conn.getMetaData();
             ResultSet tables = dbm.getTables(null, null, TABLE_NAME.toUpperCase(), null);
-
             if (tables.next())
             {
                 System.out.println("Table " + TABLE_NAME + "already exists. Ready for go!");
@@ -102,13 +103,13 @@ public final class DatabaseHandler
                         + "     foreign key(publisherName) references publisher(name)"
                         + " )");
             }
-            
         } catch (SQLException e)
         {
             System.err.println(e.getMessage() + " --- setupDatabase BOOK");
         } 
     }
-        
+    
+    //Method to create table: STUDENT
     void setupStudentTable()
     {
         String TABLE_NAME = "STUDENT";
@@ -138,6 +139,7 @@ public final class DatabaseHandler
         } 
     }
     
+    //Method to create table: AUTHOR
     void setupAuthorTable()
     {
         String TABLE_NAME = "AUTHOR";
@@ -146,7 +148,6 @@ public final class DatabaseHandler
             stmt = conn.createStatement();
             DatabaseMetaData dbm = conn.getMetaData();
             ResultSet tables = dbm.getTables(null, null, TABLE_NAME.toUpperCase(), null);
-
             if (tables.next())
             {
                 System.out.println("Table " + TABLE_NAME + "already exists. Ready for go!");
@@ -167,6 +168,7 @@ public final class DatabaseHandler
         } 
     }
     
+    //Method to create table: ISSUE
     void setupIssueTable()
     {
         String TABLE_NAME = "ISSUE";
@@ -197,52 +199,8 @@ public final class DatabaseHandler
         } 
     }
     
-    public void IssueError(int copies)
-    {
-        if(copies == 0)
-        {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("BOOK NOT AVAILABLE");
-            alert.setHeaderText(null);
-            alert.setContentText("Cannot issue the book. All copies already issued!");
-            alert.showAndWait();
-        }
-    }
-    
-    public void Trigger(String qu)
-    {
-        try {
-            boolean rs= stmt.execute(qu);
-            System.out.println(rs);
-            System.out.println("Trigger executed");
-        } catch (SQLException ex) {
-            Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    public void OverIssue(String studentId, int borrowed)
-    {
-        try 
-        {
-            CallableStatement state = conn.prepareCall("{call OverIssue(?)}");
-            state.setString("studentId", studentId);
-            if(borrowed == 3) 
-            {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Max Books Borrowed");
-                alert.setHeaderText(null);
-                alert.setContentText("Cannot borrow the book. Max limit reached");
-                alert.showAndWait();                
-            }
-            state.execute();
-            System.out.println("Procedure OverIssue executed");
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-     public void fineCalculate(int days, String studentId)
+    //Method to call the procedure : fineCalculate
+    public void fineCalculate(int days, String studentId)
     {
         try
         {
@@ -269,8 +227,6 @@ public final class DatabaseHandler
         {
             System.out.println("Exception at execQuery:dataHandler" + ex.getLocalizedMessage() );
             return null;
-        } finally
-        {
         }
         return result;
     }
@@ -287,8 +243,6 @@ public final class DatabaseHandler
             JOptionPane.showMessageDialog(null, "Error:" + ex.getMessage(), "Error Occured", JOptionPane.ERROR_MESSAGE);
             System.out.println("Exception at execAction:dataHandler" + ex.getLocalizedMessage());
             return false;
-        } finally
-        {
         }
     }
     
