@@ -33,9 +33,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafxapplication.database.DatabaseHandler;
 
-public class MainController implements Initializable {
+public class MainController implements Initializable 
+{
     
     DatabaseHandler databasehandler;
+    
     @FXML
     private TextField bookIDInput;
     @FXML
@@ -51,8 +53,10 @@ public class MainController implements Initializable {
     @FXML
     private TextField bookID;
     @FXML
+    
     private ListView<String> issueDataList;
     Boolean isReadyForSubmission;
+    
     @FXML
     private TextField studentID;
     @FXML
@@ -112,18 +116,10 @@ public class MainController implements Initializable {
 
     }
 
-    private void loadAuthorTable(ActionEvent event) {
-        loadWindow("/javafxapplication/ui/listAuthor/author_list.fxml","Author Table");
-    }
-
     @FXML
     private void loadAddPublisher(ActionEvent event) {
         loadWindow("/javafxapplication/ui/addPublisher/add_publisher.fxml","Add New Publisher");
 
-    }
-
-    private void loadPublisherTable(ActionEvent event) {
-        loadWindow("/javafxapplication/ui/listPublisher/publisher_list.fxml","Publisher Table");
     }
     
     @FXML
@@ -131,25 +127,31 @@ public class MainController implements Initializable {
         loadWindow("/javafxapplication/ui/listIssue/issueList.fxml","Issue Table");
     }
     
-    void loadWindow(String loc, String title) {
-        try {
+    void loadWindow(String loc, String title) 
+    {
+        try 
+        {
             Parent parent = FXMLLoader.load(getClass().getResource(loc));
             Stage stage = new Stage(StageStyle.DECORATED);
             stage.setTitle(title);
             stage.setScene(new Scene(parent));
             stage.show();
-        } catch (IOException ex) {
+        } catch (IOException ex) 
+        {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @FXML
-    private void loadBookInfo(ActionEvent event) {
+    private void loadBookInfo(ActionEvent event) 
+    {
         String id = bookIDInput.getText();
         String qu = "SELECT * FROM BOOK WHERE id = '" + id + "'";
         ResultSet rs = databasehandler.execQuery(qu);
         Boolean flag = false;
-        try {
+        
+        try 
+        {
             while(rs.next())
             {
                 String bName = rs.getString("title");
@@ -165,18 +167,22 @@ public class MainController implements Initializable {
                 bookName.setText("No Such Book Available");
                 bookStatus.setText("NULL");
             }
-        } catch (SQLException ex) {
+        } catch (SQLException ex)
+        {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @FXML
-    private void loadMemberInfo(ActionEvent event) {
+    private void loadMemberInfo(ActionEvent event)
+    {
         String id = memberIDInput.getText();
         String qu = "SELECT * FROM STUDENT WHERE id = '" + id + "'";
         ResultSet rs = databasehandler.execQuery(qu);
         Boolean flag = false;
-        try {
+        
+        try
+        {
             while(rs.next())
             {
                 String mName = rs.getString("name");
@@ -190,7 +196,8 @@ public class MainController implements Initializable {
                 memberName.setText("Not Registered");
                 contact.setText("NULL");
             }
-        } catch (SQLException ex) {
+        } catch (SQLException ex)
+        {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -205,88 +212,100 @@ public class MainController implements Initializable {
             String studentId = memberIDInput.getText();
             String bookId = bookIDInput.getText();
             int copies=1;
+            int borrowed=0;
+            
             String qu = "SELECT copies FROM BOOK WHERE id = '" + bookId + "'";
             ResultSet rs = databasehandler.execQuery(qu);
-            try{
-            while(rs.next())
+            try
             {
-                copies = rs.getInt("copies");
-                System.out.println(" Inside : " + copies);
-            } 
-            } catch (SQLException ex) {
-            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                while(rs.next())
+                {
+                   copies = rs.getInt("copies");
+                } 
+            } catch (SQLException ex)
+            {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println(" Copies : " + copies);
+            if(copies == 0)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("BOOK NOT AVAILABLE");
+                alert.setHeaderText(null);
+                alert.setContentText("Cannot issue the book. All copies already issued!");
+                alert.showAndWait();
+            }
             
-            databasehandler.IssueError(copies);
-            
-            int borrowed=0;
             qu = "SELECT borrowed FROM STUDENT WHERE id = '" + studentId + "'";
             rs = databasehandler.execQuery(qu);
-            try{
-            while(rs.next())
+            try
             {
-                borrowed = rs.getInt("borrowed");
-                System.out.println(" Inside borrowed : " + borrowed);
-            } 
+                while(rs.next())
+                {
+                    borrowed = rs.getInt("borrowed");
+                    System.out.println(" Inside borrowed : " + borrowed);
+                } 
             } catch (SQLException ex) 
             {
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println(" Borrowed : " + borrowed);
-            if( borrowed == 3)
-                databasehandler.OverIssue(studentId,borrowed);
-            System.out.println("Procedure executed");
-            if(copies == 0)
+            if(borrowed == 3)
             {
-                String trigger = "UPDATE PUBLISHER SET phone = 'Not available' WHERE name='NOBODY'";
-                databasehandler.Trigger(trigger);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Max Books Borrowed");
+                alert.setHeaderText(null);
+                alert.setContentText("Cannot borrow the book. Max limit reached");
+                alert.showAndWait();
             }
             
-            if(copies != 0 & borrowed <3)
+            if(copies != 0 && borrowed <3)
             {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirm Issue Operation");
-            alert.setHeaderText(null);
-            alert.setContentText("Are you sure want to issue the book " + bookName.getText() + "\n to " + memberName.getText() + " ?");
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirm Issue Operation");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure want to issue the book " + bookName.getText() + "\n to " + memberName.getText() + " ?");
             
-            Optional<ButtonType> response = alert.showAndWait();
-            if (response.get() == ButtonType.OK) {
-                String str = "INSERT INTO ISSUE VALUES ("
+                Optional<ButtonType> response = alert.showAndWait();
+                if (response.get() == ButtonType.OK)
+                {
+                    String str = "INSERT INTO ISSUE VALUES ("
                         + "'" + bookId + "',"
                         + "'" + studentId + "',"
                         + "'" + dateFormat.format(cal.getTime()) + "',"
                         + "'" + dateFormat.format(call.getTime()) + "')";
-                String str2 = "UPDATE BOOK SET copies=copies-1 WHERE id = '" + bookId + "' AND copies > 0";
-                String str3 = "UPDATE BOOK SET isAvail = false WHERE id = '" + bookId + "' AND copies <= 0 ";
-                String str4 = "UPDATE STUDENT SET borrowed = borrowed + 1 WHERE id = '" + studentId + "'";
-                  
-                if (databasehandler.execAction(str) && databasehandler.execAction(str2) && databasehandler.execAction(str4) && databasehandler.execAction(str3)) {
+                    String str2 = "UPDATE BOOK SET copies=copies-1 WHERE id = '" + bookId + "' AND copies > 0";
+                    String str3 = "UPDATE BOOK SET isAvail = false WHERE id = '" + bookId + "' AND copies <= 0 ";
+                    String str4 = "UPDATE STUDENT SET borrowed = borrowed + 1 WHERE id = '" + studentId + "'";
+                    
+                    if (databasehandler.execAction(str) && databasehandler.execAction(str2) && databasehandler.execAction(str4) && databasehandler.execAction(str3)) 
+                    {
+                        Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                        alert1.setTitle("Success");
+                        alert1.setHeaderText(null);
+                        alert1.setContentText("Book Issue Completed");
+                        alert1.showAndWait();
+                    } else 
+                    {
+                        Alert alert1 = new Alert(Alert.AlertType.ERROR);
+                        alert1.setTitle("FAILED");
+                        alert1.setHeaderText(null);
+                        alert1.setContentText("Issue Operation Failed");
+                        alert1.showAndWait();
+                    }
+                } else 
+                {
                     Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-                    alert1.setTitle("Success");
+                    alert1.setTitle("Cancelled");
                     alert1.setHeaderText(null);
-                    alert1.setContentText("Book Issue Completed");
-                    alert1.showAndWait();
-                } else {
-                    Alert alert1 = new Alert(Alert.AlertType.ERROR);
-                    alert1.setTitle("FAILED");
-                    alert1.setHeaderText(null);
-                    alert1.setContentText("Issue Operation Failed");
+                    alert1.setContentText("Issue Operation cancelled");
                     alert1.showAndWait();
                 }
-            } else {
-                Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-                alert1.setTitle("Cancelled");
-                alert1.setHeaderText(null);
-                alert1.setContentText("Issue Operation cancelled");
-                alert1.showAndWait();
-            }
             }
         } 
     
 
     @FXML
-    private void loadBookInfo2(ActionEvent event) {
+    private void loadBookInfo2(ActionEvent event)
+    {
         ObservableList<String> issueData = FXCollections.observableArrayList();
         isReadyForSubmission = false;
 
@@ -295,8 +314,10 @@ public class MainController implements Initializable {
         System.out.println(id + "\t" + studentId);
         String qu = "SELECT * FROM ISSUE WHERE bookID = '" + id + "' AND studentID = '" + studentId + "'";
         ResultSet rs = databasehandler.execQuery(qu);
-        try {
-            while (rs.next()) {
+        try
+        {
+            while (rs.next())
+            {
                 String mBookID = id;
                 String mStudentID = rs.getString("studentID");
                 Date mIssueDate = rs.getDate("issueDate");
@@ -308,7 +329,8 @@ public class MainController implements Initializable {
                 qu = "SELECT * FROM BOOK, AUTHOR WHERE BOOK.ID = AUTHOR.ID AND BOOK.ID = '" + mBookID + "'";
                 ResultSet r1 = databasehandler.execQuery(qu);
 
-                while (r1.next()) {
+                while (r1.next())
+                {
                     issueData.add("\tBook ID        :" + r1.getString("id"));
                     issueData.add("\tBook Name      :" + r1.getString("title"));
                     issueData.add("\tBook Publisher :" + r1.getString("publisherName"));
@@ -319,7 +341,8 @@ public class MainController implements Initializable {
                 r1 = databasehandler.execQuery(qu);
                 issueData.add("Student Information:-");
 
-                while (r1.next()) {
+                while (r1.next())
+                {
                     issueData.add("\tName           :" + r1.getString("name"));
                     issueData.add("\tMobile         :" + r1.getString("mobile"));
                     issueData.add("\tEmail          :" + r1.getString("email"));
@@ -337,9 +360,9 @@ public class MainController implements Initializable {
                 }
 
                 isReadyForSubmission = true;
-                
             }
-        } catch (SQLException ex) {
+        } catch (SQLException ex)
+        {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -347,7 +370,8 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void loadSubmissionOp(ActionEvent event) throws ParseException {
+    private void loadSubmissionOp(ActionEvent event) throws ParseException
+    {
         if(!isReadyForSubmission)
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -363,7 +387,8 @@ public class MainController implements Initializable {
         alert.setContentText("Are you sure want to return the book ?");
 
         Optional<ButtonType> response = alert.showAndWait();
-        if (response.get() == ButtonType.OK) {
+        if (response.get() == ButtonType.OK)
+        {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Calendar cal = Calendar.getInstance(); 
             String id = bookID.getText();
@@ -371,8 +396,10 @@ public class MainController implements Initializable {
             int days=1;
             String qu = "SELECT returnDate FROM ISSUE WHERE bookID = '" + id + "' AND studentID = '" + studentId + "'";
             ResultSet rs = databasehandler.execQuery(qu);
-            try {
-                while(rs.next()) {
+            try
+            {
+                while(rs.next())
+                {
                     String dt1 = dateFormat.format(cal.getTime());
                     Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(dt1);
                     System.out.println(date1);
@@ -382,7 +409,8 @@ public class MainController implements Initializable {
                     System.out.println(" format : " + d2);
                     System.out.println("Days : " + days);
                 }
-            } catch (SQLException ex) {
+            } catch (SQLException ex)
+            {
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("Days outside : " + days);
@@ -418,12 +446,14 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void loadRenewOp(ActionEvent event) {
+    private void loadRenewOp(ActionEvent event)
+    {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Calendar cal = Calendar.getInstance();
         Calendar call = Calendar.getInstance();
         call.add(Calendar.DATE, 14);
-        if (!isReadyForSubmission) {
+        if (!isReadyForSubmission)
+        {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Failed");
             alert.setHeaderText(null);
@@ -438,23 +468,27 @@ public class MainController implements Initializable {
         alert.setContentText("Are you sure want to renew the book ?");
 
         Optional<ButtonType> response = alert.showAndWait();
-        if (response.get() == ButtonType.OK) {
+        if (response.get() == ButtonType.OK)
+        {
             String ac = "UPDATE ISSUE SET issueDate = '"+ dateFormat.format(cal.getTime()) +"', returnDate = '" +dateFormat.format(call.getTime()) + "' WHERE BOOKID = '" + bookID.getText() + "'";
             System.out.println(ac);
-            if (databasehandler.execAction(ac)) {
+            if (databasehandler.execAction(ac))
+            {
                 Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
                 alert1.setTitle("Success");
                 alert1.setHeaderText(null);
                 alert1.setContentText("Book Renewed");
                 alert1.showAndWait();
-            } else {
+            } else
+            {
                 Alert alert1 = new Alert(Alert.AlertType.ERROR);
                 alert1.setTitle("Failed");
                 alert1.setHeaderText(null);
                 alert1.setContentText("Renew  Failed");
                 alert1.showAndWait();
             }
-        } else {
+        } else
+        {
             Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
             alert1.setTitle("Cancelled");
             alert1.setHeaderText(null);
@@ -464,23 +498,23 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void searchBook(ActionEvent event) {
+    private void searchBook(ActionEvent event)
+    {
         loadWindow("/javafxapplication/ui/searchBook/bookSearch.fxml","Search Book");
     }
 
     @FXML
-    private void searchStudent(ActionEvent event) {
+    private void searchStudent(ActionEvent event)
+    {
         loadWindow("/javafxapplication/ui/searchStudent/studentSearch.fxml","Search Student");
     }
 
     @FXML
-    private void updateCopies(ActionEvent event) {
+    private void updateCopies(ActionEvent event)
+    {
         String bookId = updateBookID.getText();
         int num = Integer.parseInt(updateBookCopies.getText());
         String query = "UPDATE BOOK SET copies = copies+" + num + " WHERE id = '" + bookId + "'";
         databasehandler.execAction(query);
     }
-
-
-    
 }
